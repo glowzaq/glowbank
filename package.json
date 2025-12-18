@@ -1,0 +1,27 @@
+{
+  "name": "glowbank",
+  "version": "1.0.0",
+  "description": "A modern, secure banking web application featuring user authentication, real-time fund transfers, transaction history, and account management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "npm run dev --prefix server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glowzaq/glowbank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/glowzaq/glowbank/issues"
+  },
+  "homepage": "https://github.com/glowzaq/glowbank#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
