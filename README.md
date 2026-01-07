@@ -1,34 +1,56 @@
 # GlowBank 🏦
-A modern, secure full-stack banking application. This project features a React frontend and a Node.js/Express backend managed as a monorepo.
 
-## Project Features (Planned)
-- **Secure Authentication**: JWT-based login and encrypted passwords.
-- **Account Management**: Support for Checking and Savings accounts.
-- **Real-time Transactions**: Transfer funds between accounts and users.
-- **Transaction History**: Detailed logs of all financial activity.
+GlowBank is a full-stack fintech application designed to provide a secure and intuitive digital banking experience. This project demonstrates a deep understanding of the MERN stack, focused on data integrity, security, and responsive user interfaces.
 
+## 🚀 Key Features
+- **Secure Authentication:** JWT (JSON Web Tokens) with custom middleware for persistent, secure sessions.
+- **Dynamic Dashboard:** A personalized user experience that fetches real-time account balances and transaction history.
+- **Role-Based Access Control (RBAC):** Distinct views and permissions for Customers, Support Staff, and Administrators.
+- **Protected Routing:** Prevents unauthorized access to sensitive pages using React Router guards.
 
-## 🚀 Recent Updates
-- **User Authentication**: Implemented secure Registration and Login logic.
-- **Password Security**: Integrated `bcryptjs` for salt-based password hashing.
-- **Session Management**: Configured `jsonwebtoken` (JWT) for secure, stateless authentication.
-- **Protected Routes**: Added a custom `authMiddleware` to verify tokens and protect sensitive API endpoints.
+## 🛠️ Tech Stack
+- **Frontend:** React.js, Bootstrap 5, Axios, React Router.
+- **Backend:** Node.js, Express.js.
+- **Database:** MongoDB & Mongoose.
+- **Security:** Bcrypt.js, JWT.
 
-## Tech Stack
-- **Frontend**: [React](react.dev) + [Vite](vitejs.dev)
-- **Backend**: [Node.js](nodejs.org) + [Express](expressjs.com)
-- **Database**: [MongoDB](www.mongodb.com) + [Mongoose](mongoosejs.com)
-- **Utilities**: Concurrently, Dotenv, Bcrypt.js
+## 📦 Installation & Setup
 
-## Project Structure
-glowbank/
-├── frontend/        # React client application
-├── backend/         # Express server & API
-│   ├── src/
-│   │   ├── controllers/ # Auth & Logic handlers
-│   │   ├── middleware/  # Auth protection middleware
-│   │   ├── models/      # Mongoose Schemas (User, Account, Transaction)
-│   │   └── utils/       # JWT generation helpers
-├── package.json     # Root configuration & scripts
-└── .gitignore       # Global ignore rules
+1. **Clone the repository**
+   ```bash
+   git clone [https://github.com/glowzaq/glowbank.git](https://github.com/glowzaq/glowbank.git)
+   cd glowbank
 
+2. **Configure Environment Variables**
+   Create a `.env` file in the `server` directory and add:
+   ```env
+   PORT=5000
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_secret_key
+
+3. **Install Backend Dependencies**
+   ```bash
+   cd server
+   npm install
+
+4. **Install Frontend Dependencies**
+   ```bash
+   cd ../client
+   npm install
+
+5. **Start the Application**
+   Open two separate terminals to run the backend and frontend simultaneously:
+
+   **Terminal 1 (Backend):**
+   ```bash
+   cd server
+   npm run dev
+
+   **Terminal 2 (Frontend):**
+   ```bash
+   cd client
+   npm run dev
+
+6. **Access the App**
+   Open your browser and navigate to:
+   `http://localhost:5173`
