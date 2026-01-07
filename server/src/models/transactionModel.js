@@ -11,9 +11,19 @@ const transactionSchema = new mongoose.Schema({
         enum: ['Deposit', 'Withdrawal', 'Transfer'],
         required: true
     },
-    amount: {type: Number, required: true},
-    description: {type: String, required: true},
-    recipientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Account'},
+    amount: {
+        type: Number,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    recipientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     status: {
         type: String,
         enum: ['Pending', 'Completed', 'Failed'],
