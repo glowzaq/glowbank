@@ -46,8 +46,8 @@ GlowBank is a full-stack fintech application designed to provide a secure and in
    cd server
    npm run dev
 
-   **Terminal 2 (Frontend):**
-   ```bash
+**Terminal 2 (Frontend):**
+```bash
    cd client
    npm run dev
 
@@ -87,10 +87,10 @@ The system has been upgraded from a single-model approach to a **linked-model ar
   "newTransaction": { ... }
 }
 
-### Get Dashboard Data
+#### Get Dashboard Data
 `GET /api/transaction/data`
 
-Fetches the authenticated user's current account balance and their complete transaction history (both sent and received).
+Fetches the authenticated users current account balance and their complete transaction history (both sent and received).
 
 **Headers:**
 | Key | Value | Description |
