@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ProtectedRoute from './routes/ProtectedRoute'
-import Dashboard from './pages/Dashboard'
+import { Dashboard } from './pages/Dashboard'
 import Navbar from './components/Navbar'
 
 const App = () => {

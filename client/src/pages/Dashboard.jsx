@@ -4,36 +4,43 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
-const Dashboard = () => {
-    const {user, loading} = useAuth()
-
-    if (loading || !user){
-        return <div>Loading your account...</div>
-    }
+export const Dashboard = () => {
+    const { user, loading: authLoading } = useAuth()
     const [data, setData] = useState({ balance: 0, transaction: [] })
-    useEffect(() => {
-        const fetchDashboard = async () => {
-            try {
-                const token = localStorage.getItem('token')
-                const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
-                    headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
-                })
-                setData(res.data)
-            } catch (error) {
-                console.error("Error fetching Dashboard")
-            }
+    const [fetching, setFetching] = useState(true)
+
+    const fetchDashboard = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            })
+            setData(res.data)
+        } catch (error) {
+            console.error("Error fetching Dashboard")
+        } finally {
+            setFetching(false)
         }
+    }
+
+    useEffect(() => {
         fetchDashboard()
     }, [])
+    
+    if(authLoading || fetching) {
+        return <div className='p-5 text-center text-success'>Loading your account...</div>
+    }
 
     return (
         <div>
             <div className="card bg-primary text-white p-4 mb-4">
                 <h2>Welcome, {user?.firstname}</h2>
                 <h5>Total Balance</h5>
-                <h2>${user?.balance?.toLocaleString()}</h2>
+                <h2>${data.balance !== undefined ? data.balance.toLocaleString() : 0}</h2>
             </div>
 
+        <TransferForm onTransferSuccess={fetchDashboard}/>
+        
             <h3>Recent Activity</h3>
             <table className="table">
                 <thead>
@@ -44,25 +51,81 @@ const Dashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                {data.transaction && data.transaction.length > 0 ? (
-                    data.transaction.map((tx)=>(
-                        <tr key={tx._id}>
-                            <td>{new Date(tx.createdAt).toLocaleString()}</td>
-                            <td>{tx.description}</td>
-                            <td className={tx.recipientID === user._id ? "text-success" : "text:danger"}>
-                                {tx.recipientID === user._id ? "+" : "-"}${tx.amount}
-                            </td>
+                    {data.transaction && data.transaction.length > 0 ? (
+                        data.transaction.map((tx) => (
+                            <tr key={tx._id}>
+                                <td>{new Date(tx.createdAt).toLocaleString()}</td>
+                                <td>{tx.description}</td>
+                                <td className={tx.recipientId === user._id ? "text-success" : "text:danger"}>
+                                    {tx.recipientId === user._id ? "+" : "-"}${tx.amount}
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={3} className="text-center text-muted">No transaction yet</td>
                         </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan={3} className="text-center text-muted">No transaction yet</td>
-                    </tr>
-                )}
+                    )}
                 </tbody>
             </table>
         </div>
     )
 }
 
-export default Dashboard
+export const TransferForm = ({ onTransferSuccess }) => {
+    const [loading, setLoading] = useState(false)
+    const [amount, setAmount] = useState('')
+    const [recipientEmail, setRecipientEmail] = useState('')
+
+    const handleTransfer = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+
+        try {
+            const token = localStorage.getItem('token')
+            await axios.post('http://localhost:5000/api/transaction/transfer',
+                { recipientEmail, amount },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+
+            alert("Transfer successful!")
+            setRecipientEmail('')
+            setAmount('')
+            onTransferSuccess()
+        } catch (error) {
+            alert(error.response?.data?.message || "Transfer failed")
+        } finally {
+            setLoading(false)
+        }
+    }
+    return (
+        <div className="card p-4 mt-4">
+            <h3>Transfer Money</h3>
+            <form onSubmit={handleTransfer}>
+                <div className="mb-3">
+                    <label className="form-label">Recipient Email Address</label>
+                    <input
+                        type="email"
+                        className="form-control"
+                        value={recipientEmail}
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Amount ($)</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                    {loading ? "Processing..." : "Send Money"}
+                </button>
+            </form>
+        </div>
+    )
+}

@@ -7,7 +7,7 @@ const generateToken = (user)=>{
         role: user.role
     }
     return jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: '1h'
+        expiresIn: '7d'
     })
 }
 
