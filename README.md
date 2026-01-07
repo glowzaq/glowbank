@@ -54,3 +54,69 @@ GlowBank is a full-stack fintech application designed to provide a secure and in
 6. **Access the App**
    Open your browser and navigate to:
    `http://localhost:5173`
+
+## 🚀 Recent Updates
+
+### 💳 Financial Architecture
+The system has been upgraded from a single-model approach to a **linked-model architecture** for better data integrity and security:
+* **User Model:** Handles authentication, profile details, and roles.
+* **Account Model:** A dedicated collection for financial data, tracking `balance` and `accountNumber` via a `userId` reference.
+* **Transaction Model:** Records all movement of funds with references to both `accountId` (sender) and `recipientId`.
+
+### 📧 Features
+* **Email-Based Transfers:** Users can now send money using the recipient's email address. The system automatically resolves the email to the correct internal account.
+* **Real-Time Dashboard:** The UI now fetches live data from the Account model to display the current balance and a filtered transaction history.
+
+---
+
+## 🛠 API Reference
+
+### Transactions
+#### Transfer Funds
+`POST /api/transaction/transfer`
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `recipientEmail` | `string` | **Required**. The email of the person receiving funds. |
+| `amount` | `number` | **Required**. The total amount to transfer. |
+
+**Response:**
+```json
+{
+  "message": "Transfer successful",
+  "newTransaction": { ... }
+}
+
+### Get Dashboard Data
+`GET /api/transaction/data`
+
+Fetches the authenticated user's current account balance and their complete transaction history (both sent and received).
+
+**Headers:**
+| Key | Value | Description |
+| :--- | :--- | :--- |
+| `Authorization` | `Bearer <token>` | **Required**. Valid JWT token. |
+
+**Success Response (200 OK):**
+```json
+{
+  "balance": 5000,
+  "transaction": [
+    {
+      "_id": "658a...",
+      "accountId": "658b...",
+      "recipientId": "658c...",
+      "amount": 500,
+      "type": "Transfer",
+      "description": "Transfer to Jane",
+      "status": "Completed",
+      "createdAt": "2026-01-07T14:30:00Z"
+    }
+  ]
+}
+
+**Error Response (500 Internal Server Error):**
+```json
+{
+  "message": "Error fetching data"
+}
