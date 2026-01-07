@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
@@ -15,7 +16,7 @@ const Dashboard = () => {
             try {
                 const token = localStorage.getItem('token')
                 const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
-                    headers: {Authorization: `Bearer ${token}`}
+                    headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
                 })
                 setData(res.data)
             } catch (error) {
