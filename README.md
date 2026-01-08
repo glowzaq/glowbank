@@ -120,3 +120,22 @@ Fetches the authenticated users current account balance and their complete trans
 {
   "message": "Error fetching data"
 }
+
+
+### Deposit Funds
+`POST /api/transaction/deposit`
+
+Adds funds to the authenticated user's account and records a transaction entry.
+
+**Request Body:**
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `amount` | Number | **Required**. The amount to deposit. |
+| `description` | String | Optional. Description of the deposit. |
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Deposit successful",
+  "newBalance": 6000
+}

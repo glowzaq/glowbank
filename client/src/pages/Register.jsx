@@ -56,8 +56,6 @@ const Register = () => {
     }
 
     setSubmitting(false)
-
-    console.log(values.password, values.password.length);
     
   }
   return (

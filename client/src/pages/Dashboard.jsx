@@ -8,10 +8,14 @@ export const Dashboard = () => {
     const { user, loading: authLoading } = useAuth()
     const [data, setData] = useState({ balance: 0, transaction: [] })
     const [fetching, setFetching] = useState(true)
+    const [isDepositOpen, setIsDepositOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [depositAmount, setDepositAmount] = useState("")
 
     const fetchDashboard = async () => {
+        const token = localStorage.getItem('token')
+        if(!token) return;
         try {
-            const token = localStorage.getItem('token')
             const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             })
@@ -31,12 +35,68 @@ export const Dashboard = () => {
         return <div className='p-5 text-center text-success'>Loading your account...</div>
     }
 
+    const handleDeposit = async (e)=>{
+        e.preventDefault()
+        setLoading(true)
+
+        try {
+            const token = localStorage.getItem("token")
+            
+            await axios.post('http://localhost:5000/api/transaction/deposit',
+                {amount: depositAmount, description: "Manual deposit"},
+                {headers: {Authorization: `Bearer ${token}`}}
+            )
+            
+            fetchDashboard()
+            setDepositAmount('')
+            setIsDepositOpen(false)
+            alert('Deposit successful!')
+        } catch (error) {
+            alert('Deposit failed!')
+        }
+    }
+
     return (
         <div>
             <div className="card bg-primary text-white p-4 mb-4">
                 <h2>Welcome, {user?.firstname}</h2>
                 <h5>Total Balance</h5>
                 <h2>${data.balance !== undefined ? data.balance.toLocaleString() : 0}</h2>
+            </div>
+
+            <div>
+                <button
+                onClick={()=> setIsDepositOpen(!isDepositOpen)}
+                style={{padding: "10px 20px", backgroundColor: isDepositOpen ? "#ccc" : "#4caf50", color: "white", border: "none", borderRadius: "5px", cursor: "pointer"}}
+                >
+                    {isDepositOpen ? "Close deposit" : "Deposit money"}
+                </button>
+
+                {isDepositOpen && (
+                    <div style={{ marginTop: "15px", padding: "20px", border: "1px solid #ddd", borderRadius: "8px", maxWidth: "300px" }}>
+                        <h3 style={{ marginTop: 0 }}>Make a Deposit</h3>
+                        <form onSubmit={handleDeposit}>
+                            <div style={{ marginBottom: "10px" }}>
+                                <label style={{ display: "block", marginBottom: "5px" }}>Amount ($)</label>
+                                <input
+                                    type="number"
+                                    placeholder="Enter amount"
+                                    value={depositAmount}
+                                    onChange={(e) => setDepositAmount(e.target.value)}
+                                    required
+                                    style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "5px", cursor: loading ? "not-allowed" : "pointer" }}
+                            >
+                                {loading ? "Processing..." : "Confirm Deposit"}
+                            </button>
+                        </form>
+                    </div>
+                )}
             </div>
 
         <TransferForm onTransferSuccess={fetchDashboard}/>

@@ -69,3 +69,49 @@ export const transferMoney = async (req, res)=>{
         })
     }
 }
+
+export const depositMoney = async (req, res)=>{
+    const {amount, description} = req.body;
+    const userId = req.user._id;
+
+    try {
+        if (!amount || amount <= 0){
+            return res.status(400).json({
+                message: "Kindly enter a valid amount"
+            })
+        }
+
+        const account = await Account.findOne({userId})
+
+        if (!account){
+            return res.status(404).json({
+                message: "Account not found"
+            })
+        }
+
+        account.balance += Number(amount)
+
+        const newTransaction = new Transaction({
+            accountId: userId,
+            recipientId: userId,
+            status: "Completed",
+            description: description || "Account deposit",
+            type: "Deposit",
+            amount: amount
+        })
+
+        await newTransaction.save()
+        await account.save()
+
+        res.status(200).json({
+            message: "Deposit successful",
+            newBalance: account.balance
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            message: "Deposit failed",
+            error: error.message
+        })
+    }
+}
