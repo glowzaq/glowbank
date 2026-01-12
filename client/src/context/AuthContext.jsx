@@ -59,7 +59,7 @@ export const AuthProvider = ( {children} ) =>{
       localStorage.setItem('token', token)
       setUser(user)
       navigate('/dashboard')
-      return { success: true }
+      return { success: true, token: response.data.token }
     } catch (error) {
       console.error('Registration error:', error.message)
       return {

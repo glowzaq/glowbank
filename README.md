@@ -139,3 +139,33 @@ Adds funds to the authenticated user's account and records a transaction entry.
   "message": "Deposit successful",
   "newBalance": 6000
 }
+
+🚀 Development Progress: [2026-01-12]
+Core Updates
+Authentication Handshake: Fixed a critical bug where the registration process was redirecting to the Dashboard before the JWT token was successfully stored.
+
+Token Persistence: Resolved the bearer undefined error by ensuring the backend registration controller returns the JWT and the frontend properly saves it to localStorage before navigation.
+
+Context Sync: Updated the AuthContext to include firstname in the initial registration response, allowing the Navbar to display the user's name immediately without requiring a page refresh.
+
+Feature Fixes
+Transaction Logic: Corrected the "Recent Activity" table logic. Transactions now correctly identify the user as the recipient or sender using type-agnostic string comparisons (String(tx.recipientId) === String(user._id)).
+
+Visual Indicators: * Deposits: Now correctly display with a + prefix and text-success (green).
+
+Transfers: Corrected a CSS typo (text:danger to text-danger) to ensure outgoing funds display in red.
+
+State Management: Fixed a "stuck" loading state in the Deposit form by adding a finally block to the asynchronous request.
+
+Technical Debt Resolved
+Fixed a typo in the register service where the token was being returned as toke.
+
+Synchronized Backend and Frontend models to ensure recipientId is consistently used for credit operations.
+
+Current system state
+Feature	Status
+Registration	✅ Functional (with Auto-Login)
+Dashboard Info	✅ Secured & Functional
+Deposits	✅ Functional (Real-time UI updates)
+Transfers	✅ Functional
+Logout	✅ Functional

@@ -6,7 +6,7 @@ import generateToken from '../utils/generateToken.js'
 
 export const register = async (req, res)=>{
     try {
-        const { firstname, lastname, email, password, role } = req.body
+        const { firstname, lastname, email, password } = req.body
 
         if (!firstname || !lastname || !email || !password){
             return res.status(400).json({message: 'All fields are required'})
@@ -43,9 +43,12 @@ export const register = async (req, res)=>{
                 balance: 0
             })
 
+            const token = generateToken(newUser)
+
             res.status(200).json({
                 message: 'User registered and Account Created Successfully',
-                user: { id: newUser._id, email: newUser.email }
+                user: { id: newUser._id, email: newUser.email, firstname: newUser.firstname },
+                token: token
             })
         }
     } catch (error) {

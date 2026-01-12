@@ -17,7 +17,7 @@ export const Dashboard = () => {
         if(!token) return;
         try {
             const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                headers: { Authorization: `Bearer ${token}` }
             })
             setData(res.data)
         } catch (error) {
@@ -28,8 +28,10 @@ export const Dashboard = () => {
     }
 
     useEffect(() => {
-        fetchDashboard()
-    }, [])
+        if(!authLoading){
+            fetchDashboard()
+        }
+    }, [authLoading])
     
     if(authLoading || fetching) {
         return <div className='p-5 text-center text-success'>Loading your account...</div>
@@ -53,6 +55,8 @@ export const Dashboard = () => {
             alert('Deposit successful!')
         } catch (error) {
             alert('Deposit failed!')
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -116,8 +120,8 @@ export const Dashboard = () => {
                             <tr key={tx._id}>
                                 <td>{new Date(tx.createdAt).toLocaleString()}</td>
                                 <td>{tx.description}</td>
-                                <td className={tx.recipientId === user._id ? "text-success" : "text:danger"}>
-                                    {tx.recipientId === user._id ? "+" : "-"}${tx.amount}
+                                <td className={tx.recipientId.toString() === user._id.toString() ? "text-success" : "text-danger"}>
+                                    {tx.recipientId.toString() === user._id.toString() ? "+" : "-"}${tx.amount}
                                 </td>
                             </tr>
                         ))

@@ -49,8 +49,12 @@ const Register = () => {
 
     const result = await register(values.firstname, values.lastname, values.email, values.password)
     if (result.success){
+      localStorage.setItem('token', result.token)
       setSuccessMsg('Registration successful!');
       resetForm();
+      setTimeout(()=>{
+        navigate('/dashboard')
+      }, 1500)
     }else{
       setServerError(result.error)
     }
