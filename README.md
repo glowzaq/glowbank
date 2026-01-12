@@ -217,10 +217,6 @@ Adds funds to the authenticated user's account and records a transaction entry.
 
 ---
 
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/glowzaq/glowbank/issues).
