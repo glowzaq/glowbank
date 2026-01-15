@@ -117,7 +117,7 @@ POST /api/transaction/transfer
 #### Get Dashboard Data
 
 ```http
-GET /api/transaction/data
+GET /api/transaction/dashboard-info
 ```
 
 Fetches the authenticated user's current account balance and their complete transaction history (both sent and received).
@@ -219,7 +219,7 @@ Adds funds to the authenticated user's account and records a transaction entry.
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/glowzaq/glowbank/issues).
+Contributions, issues, and feature requests are welcome!
 
 ## 👨‍💻 Author
 

@@ -2,7 +2,8 @@ import React from 'react'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth.js'
+import Swal from 'sweetalert2'
 
 export const Dashboard = () => {
     const { user, loading: authLoading } = useAuth()
@@ -12,9 +13,10 @@ export const Dashboard = () => {
     const [loading, setLoading] = useState(false)
     const [depositAmount, setDepositAmount] = useState("")
 
+
     const fetchDashboard = async () => {
         const token = localStorage.getItem('token')
-        if(!token) return;
+        if (!token) return;
         try {
             const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
                 headers: { Authorization: `Bearer ${token}` }
@@ -28,34 +30,50 @@ export const Dashboard = () => {
     }
 
     useEffect(() => {
-        if(!authLoading){
+        const token = localStorage.getItem('token')
+        if (token) {
             fetchDashboard()
         }
-    }, [authLoading])
-    
-    if(authLoading || fetching) {
+    }, [user])
+
+    if (fetching || authLoading || !user) {
         return <div className='p-5 text-center text-success'>Loading your account...</div>
     }
 
-    const handleDeposit = async (e)=>{
+    if (!data.transaction && !fetching) {
+        return <div className='p-5 text-center text-success'>Unable to load data, please refresh...</div>
+    }
+
+    const handleDeposit = async (e) => {
         e.preventDefault()
         setLoading(true)
 
         try {
             const token = localStorage.getItem("token")
-            
+
             await axios.post('http://localhost:5000/api/transaction/deposit',
-                {amount: depositAmount, description: "Manual deposit"},
-                {headers: {Authorization: `Bearer ${token}`}}
+                { amount: depositAmount, description: "Manual deposit" },
+                { headers: { Authorization: `Bearer ${token}` } }
             )
-            
+
             fetchDashboard()
             setDepositAmount('')
             setIsDepositOpen(false)
-            alert('Deposit successful!')
+            Swal.fire({
+                toast: true,
+                title: 'Success!',
+                text: 'Deposit successful',
+                icon: 'success',
+                confirmButtonColor: 'green'
+            })
         } catch (error) {
-            alert('Deposit failed!')
-        }finally{
+            Swal.fire({
+                toast: true,
+                title: 'Error!',
+                text: 'Deposit failed',
+                icon: 'error',
+            })
+        } finally {
             setLoading(false)
         }
     }
@@ -64,14 +82,38 @@ export const Dashboard = () => {
         <div>
             <div className="card bg-primary text-white p-4 mb-4">
                 <h2>Welcome, {user?.firstname}</h2>
+                <p className="mb-2 opacity-75">Account Number: <strong>{user?.accountNumber}</strong>
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText(user.accountNumber);
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Account number copied',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }}
+                        className="btn btn-sm btn-light ms-2"
+                        style={{ fontSize: '10px', padding: '2px 5px' }}
+                    >
+                        Copy
+                    </button>
+                </p>
                 <h5>Total Balance</h5>
-                <h2>${data.balance !== undefined ? data.balance.toLocaleString() : 0}</h2>
+                <h2>
+                    {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                    }).format(data.balance || 0)}
+                </h2>
             </div>
 
             <div>
                 <button
-                onClick={()=> setIsDepositOpen(!isDepositOpen)}
-                style={{padding: "10px 20px", backgroundColor: isDepositOpen ? "#ccc" : "#4caf50", color: "white", border: "none", borderRadius: "5px", cursor: "pointer"}}
+                    onClick={() => setIsDepositOpen(!isDepositOpen)}
+                    style={{ padding: "10px 20px", backgroundColor: isDepositOpen ? "#ccc" : "#4caf50", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}
                 >
                     {isDepositOpen ? "Close deposit" : "Deposit money"}
                 </button>
@@ -103,8 +145,8 @@ export const Dashboard = () => {
                 )}
             </div>
 
-        <TransferForm onTransferSuccess={fetchDashboard}/>
-        
+            <TransferForm onTransferSuccess={fetchDashboard} />
+
             <h3>Recent Activity</h3>
             <table className="table">
                 <thead>
@@ -114,24 +156,31 @@ export const Dashboard = () => {
                         <th>Amount</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {data.transaction && data.transaction.length > 0 ? (
-                        data.transaction.map((tx) => (
-                            <tr key={tx._id}>
-                                <td>{new Date(tx.createdAt).toLocaleString()}</td>
-                                <td>{tx.description}</td>
-                                <td className={tx.recipientId.toString() === user._id.toString() ? "text-success" : "text-danger"}>
-                                    {tx.recipientId.toString() === user._id.toString() ? "+" : "-"}${tx.amount}
-                                </td>
+                    <tbody>
+                        {data.transaction && data.transaction.length > 0 ? (
+                            data.transaction.map((tx) => {
+                                const isRecipient = user && String(tx.recipientId) === String(user._id);
+                                
+                                return (
+                                    <tr key={tx._id}>
+                                        <td>{new Date(tx.createdAt).toLocaleString()}</td>
+                                        <td>{tx.description}</td>
+                                        <td
+                                            className={isRecipient ? "text-success" : "text-danger"}
+                                            style={{ color: isRecipient ? "#198754" : "#dc3545" }}
+                                        >
+                                            {isRecipient ? "+" : "-"}${tx.amount}
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan={3} className="text-center text-muted">No transactions yet</td>
                             </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan={3} className="text-center text-muted">No transaction yet</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+                        )}
+                    </tbody>
+                </table>
         </div>
     )
 }
@@ -151,13 +200,23 @@ export const TransferForm = ({ onTransferSuccess }) => {
                 { recipientEmail, amount },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
-
-            alert("Transfer successful!")
+            Swal.fire({
+                toast: true,
+                title: 'Success!',
+                text: `Successfully sent $${amount} to ${recipientEmail}`,
+                icon: 'success',
+                confirmButtonColor: 'green'
+            })
             setRecipientEmail('')
             setAmount('')
             onTransferSuccess()
         } catch (error) {
-            alert(error.response?.data?.message || "Transfer failed")
+            Swal.fire({
+                toast: true,
+                title: 'Error!',
+                text: 'Transfer failed, try again later',
+                icon: 'error'
+            })
         } finally {
             setLoading(false)
         }

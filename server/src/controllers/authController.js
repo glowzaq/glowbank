@@ -47,7 +47,12 @@ export const register = async (req, res)=>{
 
             res.status(200).json({
                 message: 'User registered and Account Created Successfully',
-                user: { id: newUser._id, email: newUser.email, firstname: newUser.firstname },
+                user: {
+                    _id: newUser._id,
+                    email: newUser.email,
+                    firstname: newUser.firstname,
+                    accountNumber: accountNumber
+                },
                 token: token
             })
         }
@@ -70,12 +75,14 @@ export const login = async (req, res)=>{
         }
 
         const token = generateToken(existing._id)
+        const userAccount = await Account.findOne({userId: existing._id})
         res.status(201).json({
             message: 'Login successful',
             user: {
-                id: existing._id,
+                _id: existing._id,
                 firstname: existing.firstname,
-                email: existing.email
+                email: existing.email,
+                accountNumber: userAccount ? userAccount.accountNumber : "N/A"
             },
             token
         })

@@ -23,5 +23,9 @@
   "homepage": "https://github.com/glowzaq/glowbank#readme",
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "react-hot-toast": "^2.6.0",
+    "sweetalert2": "^11.26.17"
   }
 }

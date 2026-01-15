@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import * as yup from 'yup'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth.js'
 import { useNavigate } from 'react-router-dom'
 import { Form, Field, ErrorMessage, Formik } from 'formik'
 
