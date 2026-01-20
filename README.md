@@ -217,6 +217,9 @@ Adds funds to the authenticated user's account and records a transaction entry.
 
 ---
 
+## 📝 License
+This project is open source and available under the MIT License.
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!

@@ -6,15 +6,15 @@ import Register from './pages/Register'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { Dashboard } from './pages/Dashboard'
 import Navbar from './components/Navbar'
-import { Toaster } from 'react-hot-toast'
+import Home from './pages/Home'
 
 const App = () => {
   return (
     <BrowserRouter>
-      {/* <Toaster position='top-center' reverseOrder={false} /> */}
     <AuthProvider>
       <Navbar/>
       <Routes>
+        <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>} />
         <Route path='/dashboard' element={

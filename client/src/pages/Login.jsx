@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth.js'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { motion } from 'framer-motion'
 
 const loginSchema = yup.object().shape({
   email: yup.string().email("Invalid email format").required("Email is required"),
@@ -36,43 +37,81 @@ const Login = () => {
       setSubmitting(false)
   }
   return (
-    <div className='container mt-5'>
-      <h1>Login to your Account</h1>
-      {serverError && (<p className='text-danger'>{serverError}</p>)}
-      {successMsg && (<p className='text-success'>{successMsg}</p>)}
-      <Formik
-        validateSchema={loginSchema}
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
+    <div className="auth-page">
+      <motion.div
+        className="auth-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            <div className="form-floating mb-3 w-50">
-              <Field type="email" className="form-control" id="email" placeholder="name@example.com" name="email" />
-              <label htmlFor="email">Email address</label>
-              <ErrorMessage name="email" component="div" className="text-danger" />
-            </div>
-            <div className="form-floating w-50 mb-3">
-              <Field type="password" className="form-control" id="password" placeholder="Password" name="password" />
-              <label htmlFor="password">Password</label>
-              <ErrorMessage name="password" component="div" className="text-danger" />
-            </div>
-            <button type='submit' className='btn btn-primary' disabled={isSubmitting}>{isSubmitting ? 'Logging in...' : 'Login'}</button>
-          </Form>
-        )}
+        <div className="auth-header text-center mb-4">
+          <h2 className="fw-bold text-primary">GlowBank</h2>
+          <p className="text-muted">Login to your Account</p>
+        </div>
 
-      </Formik>
-      <p style={{ marginTop: "10px" }}>
-        Don’t have an account?{" "}
-        <span
-          style={{ color: "blue", cursor: "pointer" }}
-          onClick={() => navigate("/register")}
+        {serverError && <div className="alert alert-danger py-2 small">{serverError}</div>}
+        {successMsg && <div className="alert alert-success py-2 small">{successMsg}</div>}
+
+        <Formik
+          validateSchema={loginSchema}
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
         >
-          Register
-        </span>
-      </p>
+          {({ isSubmitting }) => (
+            <Form>
+              <div className="mb-3">
+                <label className="form-label" htmlFor="email">Email address</label>
+                <Field
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  placeholder="name@example.com"
+                  name="email"
+                />
+                <ErrorMessage name="email" component="div" className="text-danger small mt-1" />
+              </div>
+
+              <div className="mb-4">
+                <label className="form-label" htmlFor="password">Password</label>
+                <Field
+                  type="password"
+                  className="form-control"
+                  id="password"
+                  placeholder="Password"
+                  name="password"
+                />
+                <ErrorMessage name="password" component="div" className="text-danger small mt-1" />
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type='submit'
+                className='btn btn-primary w-100 py-2 fw-bold'
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <span className="spinner-border spinner-border-sm me-2"></span>
+                ) : null}
+                {isSubmitting ? 'Logging in...' : 'Login'}
+              </motion.button>
+            </Form>
+          )}
+        </Formik>
+
+        <p className="text-center mt-4 mb-0 small text-muted">
+          Don’t have an account?{" "}
+          <span
+            className="text-primary fw-bold"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/register")}
+          >
+            Register
+          </span>
+        </p>
+      </motion.div>
     </div>
-  )
+  );
 }
 
 export default Login

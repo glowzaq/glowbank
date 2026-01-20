@@ -1,18 +1,16 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useEffect } from 'react'
-import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth.js'
 import Swal from 'sweetalert2'
+import { motion } from 'framer-motion'
 
 export const Dashboard = () => {
-    const { user, loading: authLoading } = useAuth()
+    const { user, logout, loading: authLoading } = useAuth()
     const [data, setData] = useState({ balance: 0, transaction: [] })
     const [fetching, setFetching] = useState(true)
     const [isDepositOpen, setIsDepositOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [depositAmount, setDepositAmount] = useState("")
-
 
     const fetchDashboard = async () => {
         const token = localStorage.getItem('token')
@@ -31,222 +29,216 @@ export const Dashboard = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token')
-        if (token) {
-            fetchDashboard()
-        }
+        if (token) fetchDashboard()
     }, [user])
 
     if (fetching || authLoading || !user) {
-        return <div className='p-5 text-center text-success'>Loading your account...</div>
-    }
-
-    if (!data.transaction && !fetching) {
-        return <div className='p-5 text-center text-success'>Unable to load data, please refresh...</div>
+        return (
+            <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+                <div className="text-center">
+                    <div className="spinner-border text-primary mb-3" role="status"></div>
+                    <p className="text-muted fw-bold">Securing your connection...</p>
+                </div>
+            </div>
+        )
     }
 
     const handleDeposit = async (e) => {
         e.preventDefault()
+        if (Number(depositAmount) <= 0) {
+            return Swal.fire({ toast: true, title: 'Invalid Amount', icon: 'warning' });
+        }
         setLoading(true)
-
         try {
             const token = localStorage.getItem("token")
-
             await axios.post('http://localhost:5000/api/transaction/deposit',
                 { amount: depositAmount, description: "Manual deposit" },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
-
             fetchDashboard()
             setDepositAmount('')
             setIsDepositOpen(false)
-            Swal.fire({
-                toast: true,
-                title: 'Success!',
-                text: 'Deposit successful',
-                icon: 'success',
-                confirmButtonColor: 'green'
-            })
+            Swal.fire({ icon: 'success', title: 'Funds Deposited' })
         } catch (error) {
-            Swal.fire({
-                toast: true,
-                title: 'Error!',
-                text: 'Deposit failed',
-                icon: 'error',
-            })
+            Swal.fire({ icon: 'error', title: 'Deposit Failed' })
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div>
-            <div className="card bg-primary text-white p-4 mb-4">
-                <h2>Welcome, {user?.firstname}</h2>
-                <p className="mb-2 opacity-75">Account Number: <strong>{user?.accountNumber}</strong>
-                    <button
-                        onClick={() => {
-                            navigator.clipboard.writeText(user.accountNumber);
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'Account number copied',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }}
-                        className="btn btn-sm btn-light ms-2"
-                        style={{ fontSize: '10px', padding: '2px 5px' }}
-                    >
-                        Copy
+        <div className="dashboard-wrapper">
+            {/* Sidebar */}
+            <aside className="sidebar d-none d-md-flex">
+                <h3 className="fw-bold mb-5 text-primary">GlowBank</h3>
+                <nav className="nav flex-column gap-3">
+                    <button className="btn btn-link text-white text-decoration-none text-start p-0 opacity-100">
+                        <i className="bi bi-house-door me-2"></i> Overview
                     </button>
-                </p>
-                <h5>Total Balance</h5>
-                <h2>
-                    {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                    }).format(data.balance || 0)}
-                </h2>
-            </div>
+                    <button className="btn btn-link text-white text-decoration-none text-start p-0 opacity-50">
+                        <i className="bi bi-credit-card me-2"></i> My Cards
+                    </button>
+                    <button className="btn btn-link text-white text-decoration-none text-start p-0 opacity-50">
+                        <i className="bi bi-gear me-2"></i> Settings
+                    </button>
+                </nav>
+                <div className="mt-auto">
+                    <button onClick={logout} className="btn btn-outline-danger w-100 border-0 text-start">
+                        <i className="bi bi-box-arrow-left me-2"></i> Logout
+                    </button>
+                </div>
+            </aside>
 
-            <div>
-                <button
-                    onClick={() => setIsDepositOpen(!isDepositOpen)}
-                    style={{ padding: "10px 20px", backgroundColor: isDepositOpen ? "#ccc" : "#4caf50", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}
-                >
-                    {isDepositOpen ? "Close deposit" : "Deposit money"}
-                </button>
-
-                {isDepositOpen && (
-                    <div style={{ marginTop: "15px", padding: "20px", border: "1px solid #ddd", borderRadius: "8px", maxWidth: "300px" }}>
-                        <h3 style={{ marginTop: 0 }}>Make a Deposit</h3>
-                        <form onSubmit={handleDeposit}>
-                            <div style={{ marginBottom: "10px" }}>
-                                <label style={{ display: "block", marginBottom: "5px" }}>Amount ($)</label>
-                                <input
-                                    type="number"
-                                    placeholder="Enter amount"
-                                    value={depositAmount}
-                                    onChange={(e) => setDepositAmount(e.target.value)}
-                                    required
-                                    style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "5px", cursor: loading ? "not-allowed" : "pointer" }}
-                            >
-                                {loading ? "Processing..." : "Confirm Deposit"}
-                            </button>
-                        </form>
+            {/* Main Content */}
+            <main className="main-content">
+                <header className="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <h2 className="fw-bold mb-0">Welcome back, {user?.firstname}</h2>
+                        <p className="text-muted small">Here's what's happening with your account today.</p>
                     </div>
-                )}
-            </div>
+                </header>
 
-            <TransferForm onTransferSuccess={fetchDashboard} />
+                <div className="row g-4">
+                    {/* Left Column: Balance & History */}
+                    <div className="col-lg-8">
+                        {/* Balance Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                            className="card balance-card p-4 mb-4 border-0 shadow"
+                        >
+                            <div className="d-flex justify-content-between align-items-start mb-4">
+                                <div>
+                                    <span className="text-uppercase small opacity-75">Available Balance</span>
+                                    <h1 className="display-5 fw-bold mb-0">${data.balance?.toLocaleString()}</h1>
+                                </div>
+                                <i className="bi bi-cpu fs-1 opacity-25"></i>
+                            </div>
+                            <div className="pt-3 border-top border-secondary">
+                                <span className="small opacity-75 d-block">Account Number</span>
+                                <div className="d-flex align-items-center gap-3">
+                                    <span className="h5 mb-0 font-monospace">{user?.accountNumber}</span>
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(user.accountNumber);
+                                            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied!', showConfirmButton: false, timer: 1500 });
+                                        }}
+                                        className="btn btn-sm btn-light py-0 px-2 opacity-75"
+                                    >Copy</button>
+                                </div>
+                            </div>
+                        </motion.div>
 
-            <h3>Recent Activity</h3>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                    <tbody>
-                        {data.transaction && data.transaction.length > 0 ? (
-                            data.transaction.map((tx) => {
-                                const isRecipient = user && String(tx.recipientId) === String(user._id);
-                                
-                                return (
-                                    <tr key={tx._id}>
-                                        <td>{new Date(tx.createdAt).toLocaleString()}</td>
-                                        <td>{tx.description}</td>
-                                        <td
-                                            className={isRecipient ? "text-success" : "text-danger"}
-                                            style={{ color: isRecipient ? "#198754" : "#dc3545" }}
-                                        >
-                                            {isRecipient ? "+" : "-"}${tx.amount}
-                                        </td>
-                                    </tr>
-                                );
-                            })
-                        ) : (
-                            <tr>
-                                <td colSpan={3} className="text-center text-muted">No transactions yet</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                        {/* Recent Activity */}
+                        <div className="card stat-card p-4">
+                            <h5 className="fw-bold mb-4">Recent Activity</h5>
+                            <div className="table-responsive">
+                                <table className="table table-hover align-middle">
+                                    <thead className="table-light">
+                                        <tr>
+                                            <th className="border-0">Date</th>
+                                            <th className="border-0">Description</th>
+                                            <th className="border-0 text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {data.transaction?.length > 0 ? (
+                                            data.transaction.map((tx) => {
+                                                const isRecipient = user && String(tx.recipientId) === String(user._id);
+                                                return (
+                                                    <tr key={tx._id}>
+                                                        <td className="text-muted small">{new Date(tx.createdAt).toLocaleDateString()}</td>
+                                                        <td className="fw-medium">{tx.description}</td>
+                                                        <td className={`text-end fw-bold ${isRecipient ? "text-success" : "text-danger"}`}>
+                                                            {isRecipient ? "+" : "-"}${tx.amount.toLocaleString()}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
+                                        ) : (
+                                            <tr><td colSpan={3} className="text-center py-4 text-muted small">No transactions found.</td></tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Quick Actions */}
+                    <div className="col-lg-4">
+                        <div className="card stat-card p-4 mb-4">
+                            <h5 className="fw-bold mb-3">Quick Deposit</h5>
+                            <button
+                                onClick={() => setIsDepositOpen(!isDepositOpen)}
+                                className={`btn w-100 mb-3 ${isDepositOpen ? 'btn-light' : 'btn-success'}`}
+                            >
+                                {isDepositOpen ? "Cancel" : "Add Funds"}
+                            </button>
+
+                            {isDepositOpen && (
+                                <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleDeposit}>
+                                    <div className="mb-3">
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="0.00"
+                                            value={depositAmount}
+                                            onChange={(e) => setDepositAmount(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <button type="submit" disabled={loading} className="btn btn-primary w-100">
+                                        {loading ? "Processing..." : "Confirm Deposit"}
+                                    </button>
+                                </motion.form>
+                            )}
+                        </div>
+
+                        <TransferForm balance={data?.balance} onTransferSuccess={fetchDashboard} />
+                    </div>
+                </div>
+            </main>
         </div>
     )
 }
 
-export const TransferForm = ({ onTransferSuccess }) => {
+export const TransferForm = ({ balance, onTransferSuccess }) => {
     const [loading, setLoading] = useState(false)
     const [amount, setAmount] = useState('')
     const [recipientEmail, setRecipientEmail] = useState('')
+    const { user } = useAuth()
 
     const handleTransfer = async (e) => {
         e.preventDefault()
-        setLoading(true)
+        if (Number(amount) <= 0 || Number(amount) > Number(balance) || recipientEmail === user.email) {
+            Swal.fire({icon: 'error', title: 'Invalid transaction, check and try again'})
+            return;
+        }
 
+        setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            await axios.post('http://localhost:5000/api/transaction/transfer',
-                { recipientEmail, amount },
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            Swal.fire({
-                toast: true,
-                title: 'Success!',
-                text: `Successfully sent $${amount} to ${recipientEmail}`,
-                icon: 'success',
-                confirmButtonColor: 'green'
-            })
-            setRecipientEmail('')
-            setAmount('')
-            onTransferSuccess()
+            await axios.post('http://localhost:5000/api/transaction/transfer', { recipientEmail, amount }, { headers: { Authorization: `Bearer ${token}` } })
+            Swal.fire({ icon: 'success', title: 'Transfer Successful' })
+            setRecipientEmail(''); setAmount(''); onTransferSuccess()
         } catch (error) {
-            Swal.fire({
-                toast: true,
-                title: 'Error!',
-                text: 'Transfer failed, try again later',
-                icon: 'error'
-            })
-        } finally {
-            setLoading(false)
-        }
+            Swal.fire({ icon: 'error', title: 'Transfer Failed' })
+        } finally { setLoading(false) }
     }
+
     return (
-        <div className="card p-4 mt-4">
-            <h3>Transfer Money</h3>
+        <div className="card stat-card p-4">
+            <h5 className="fw-bold mb-3">Send Money</h5>
             <form onSubmit={handleTransfer}>
                 <div className="mb-3">
-                    <label className="form-label">Recipient Email Address</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        value={recipientEmail}
-                        onChange={(e) => setRecipientEmail(e.target.value)}
-                        required
-                    />
+                    <label className="small text-muted mb-1">Recipient Email</label>
+                    <input type="email" className="form-control" value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} required />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">Amount ($)</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        required
-                    />
+                    <label className="small text-muted mb-1">Amount ($)</label>
+                    <input type="number" className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} required />
                 </div>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? "Processing..." : "Send Money"}
+                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                    {loading ? "Processing..." : "Send Now"}
                 </button>
             </form>
         </div>
