@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import API from '../api.js'
 import { useAuth } from '../hooks/useAuth.js'
 import Swal from 'sweetalert2'
 import { motion } from 'framer-motion'
@@ -16,7 +16,7 @@ export const Dashboard = () => {
         const token = localStorage.getItem('token')
         if (!token) return;
         try {
-            const res = await axios.get('http://localhost:5000/api/transaction/dashboard-info', {
+            const res = await API.get('http://localhost:5000/api/transaction/dashboard-info', {
                 headers: { Authorization: `Bearer ${token}` }
             })
             setData(res.data)
@@ -51,7 +51,7 @@ export const Dashboard = () => {
         setLoading(true)
         try {
             const token = localStorage.getItem("token")
-            await axios.post('http://localhost:5000/api/transaction/deposit',
+            await API.post('http://localhost:5000/api/transaction/deposit',
                 { amount: depositAmount, description: "Manual deposit" },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -217,7 +217,7 @@ export const TransferForm = ({ balance, onTransferSuccess }) => {
         setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            await axios.post('http://localhost:5000/api/transaction/transfer', { recipientEmail, amount }, { headers: { Authorization: `Bearer ${token}` } })
+            await API.post('http://localhost:5000/api/transaction/transfer', { recipientEmail, amount }, { headers: { Authorization: `Bearer ${token}` } })
             Swal.fire({ icon: 'success', title: 'Transfer Successful' })
             setRecipientEmail(''); setAmount(''); onTransferSuccess()
         } catch (error) {
