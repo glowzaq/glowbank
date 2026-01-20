@@ -140,7 +140,7 @@ export const Dashboard = () => {
                                     </span> */}
                                     <input
                                         type="text"
-                                        className="form-control border-start-0 ps-0 form-control-sm"
+                                        className="form-control border-start-2 ps-0 form-control-sm"
                                         placeholder="Search description..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
