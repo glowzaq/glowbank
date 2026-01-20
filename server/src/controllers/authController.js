@@ -81,6 +81,7 @@ export const login = async (req, res)=>{
             user: {
                 _id: existing._id,
                 firstname: existing.firstname,
+                lastname: existing.lastname,
                 email: existing.email,
                 accountNumber: userAccount ? userAccount.accountNumber : "N/A"
             },

@@ -166,8 +166,10 @@ export const Dashboard = () => {
                     <div className="col-lg-4">
                         <CreditCard
                             name={`${user?.firstname} ${user?.lastname}`}
+                            // name={`${user?.firstname || ''} ${user?.lastname || ''}`}
                             expiry="12/28"
                         />
+
                         <div className="card stat-card p-4 mb-4">
                             <h5 className="fw-bold mb-3">Quick Deposit</h5>
                             <button
