@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import API from '../api.js'
 
 export const AuthContext = createContext()
 
@@ -21,11 +21,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await axios.get('http://localhost:5000/api/auth/protected', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        const response = await API.get('/api/auth/protected')
         const userData = response.data.user || response.data;
         
         setUser(userData);
@@ -43,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password })
+      const response = await API.post('/api/auth/login', { email, password })
       const { token, user } = response.data
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
@@ -61,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (firstname, lastname, email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', { firstname, lastname, email, password })
+      const response = await API.post('/api/auth/register', { firstname, lastname, email, password })
       const { token, user } = response.data
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))

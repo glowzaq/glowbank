@@ -16,8 +16,7 @@ export const Dashboard = () => {
         const token = localStorage.getItem('token')
         if (!token) return;
         try {
-            const res = await API.get('http://localhost:5000/api/transaction/dashboard-info', {
-                headers: { Authorization: `Bearer ${token}` }
+            const res = await API.get('/api/transaction/dashboard-info', {
             })
             setData(res.data)
         } catch (error) {
@@ -51,9 +50,8 @@ export const Dashboard = () => {
         setLoading(true)
         try {
             const token = localStorage.getItem("token")
-            await API.post('http://localhost:5000/api/transaction/deposit',
-                { amount: depositAmount, description: "Manual deposit" },
-                { headers: { Authorization: `Bearer ${token}` } }
+            await API.post('/api/transaction/deposit',
+                { amount: depositAmount, description: "Manual deposit" }
             )
             fetchDashboard()
             setDepositAmount('')
@@ -217,7 +215,7 @@ export const TransferForm = ({ balance, onTransferSuccess }) => {
         setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            await API.post('http://localhost:5000/api/transaction/transfer', { recipientEmail, amount }, { headers: { Authorization: `Bearer ${token}` } })
+            await API.post('/api/transaction/transfer', { recipientEmail, amount })
             Swal.fire({ icon: 'success', title: 'Transfer Successful' })
             setRecipientEmail(''); setAmount(''); onTransferSuccess()
         } catch (error) {
