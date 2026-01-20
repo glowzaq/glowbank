@@ -135,9 +135,9 @@ export const Dashboard = () => {
                             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                                 <h5 className="fw-bold mb-0">Recent Activity</h5>
                                 <div className="input-group" style={{ maxWidth: '300px' }}>
-                                    <span className="input-group-text bg-white border-end-0">
+                                    {/* <span className="input-group-text bg-white border-end-0">
                                         <i className="bi bi-search text-muted small"></i>
-                                    </span>
+                                    </span> */}
                                     <input
                                         type="text"
                                         className="form-control border-start-0 ps-0 form-control-sm"
