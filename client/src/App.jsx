@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -9,10 +9,13 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 
 const App = () => {
+  const location = useLocation
+  const hideNavbarOn = ['/dashboard'];
+  const shouldHide = hideNavbarOn.includes(location.pathname);
   return (
     <BrowserRouter>
     <AuthProvider>
-      <Navbar/>
+      {!shouldHide && <Navbar />}
       <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Login/>}/>

@@ -1,44 +1,41 @@
-import React from 'react'
-import { useAuth } from '../hooks/useAuth.js'
-import { Link } from 'react-router-dom'
+import { useAuth } from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
-    // const { user, logout } = useAuth()
-    // return (
-    //     <nav className='navbar navbar-expand-lg navbar-dark bg-dark px-4'>
-    //         <Link className="navbar-brand fw-bold" to="/">GlowBank</Link>
+    const { user, logout } = useAuth();
 
-    //         <div className="ms-auto d-flex align-items-center">
-    //             {!user ? (
-    //                 <>
-    //                     <Link className="nav-link text-primary me-3" to="/login">Login</Link>
-    //                     <Link className="btn btn-primary" to="/register">Open Account</Link>
-    //                 </>
-    //             ) : (
-    //                 <>
-    //                     <Link className="nav-link text-white me-3" to="/dashboard">Dashboard</Link>
-    //                     {user.role === 'admin' && (
-    //                         <Link className="nav-link text-warning me-3" to="/admin/users">Manage Users</Link>
-    //                     )}
+    return (
+        <nav className="navbar navbar-expand-lg sticky-top bg-white border-bottom py-3 px-4">
+            <div className="container">
+                <Link className="navbar-brand fw-bold text-primary fs-3" to="/" style={{ letterSpacing: '-1.5px' }}>
+                    GlowBank
+                </Link>
 
-    //                     {user.role === 'support' && (
-    //                         <Link className="nav-link text-info me-3" to="/support/tickets">Support Inbox</Link>
-    //                     )}
+                <div className="ms-auto d-flex align-items-center">
+                    {!user ? (
+                        <>
+                            <Link className="nav-link text-muted fw-medium me-4" to="/login">Login</Link>
+                            <Link className="btn btn-primary px-4 fw-bold shadow-sm" to="/register">Open Account</Link>
+                        </>
+                    ) : (
+                        <>
+                            {user.role === 'admin' && (
+                                <Link className="nav-link text-warning me-3" to="/admin/users">Admin</Link>
+                            )}
 
-    //                     <div className="dropdown">
-    //                         <span className="text-white me-3 small">Hello, {user.firstname}</span>
-    //                         <button
-    //                             className="btn btn-outline-danger btn-sm"
-    //                             onClick={logout}
-    //                         >
-    //                             Logout
-    //                         </button>
-    //                     </div>
-    //                 </>
-    //             )}
-    //         </div>
-    //     </nav>
-    // )
+                            <Link className="btn btn-outline-primary me-3 fw-bold" to="/dashboard">
+                                <i className="bi bi-speedometer2 me-2"></i>Dashboard
+                            </Link>
+
+                            <button className="btn btn-link text-danger text-decoration-none small" onClick={logout}>
+                                Logout
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </nav>
+    );
 }
 
 export default Navbar

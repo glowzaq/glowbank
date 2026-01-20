@@ -3,6 +3,7 @@ import API from '../api.js'
 import { useAuth } from '../hooks/useAuth.js'
 import Swal from 'sweetalert2'
 import { motion } from 'framer-motion'
+import CreditCard from '../components/CreditCard.jsx'
 
 export const Dashboard = () => {
     const { user, logout, loading: authLoading } = useAuth()
@@ -163,6 +164,10 @@ export const Dashboard = () => {
 
                     {/* Right Column: Quick Actions */}
                     <div className="col-lg-4">
+                        <CreditCard
+                            name={`${user?.firstname} ${user?.lastname}`}
+                            expiry="12/28"
+                        />
                         <div className="card stat-card p-4 mb-4">
                             <h5 className="fw-bold mb-3">Quick Deposit</h5>
                             <button

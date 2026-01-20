@@ -1,0 +1,54 @@
+.glow-card {
+    width: 100%;
+    max-width: 360px;
+    height: 220px;
+    perspective: 1000px;
+    margin-bottom: 2rem;
+}
+
+.glow-card-front {
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    border-radius: 20px;
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.chip {
+    width: 45px;
+    height: 35px;
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    border-radius: 6px;
+}
+
+.card-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    word-spacing: 5px;
+}
+
+.card-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 2px;
+}
+
+.card-info {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.visa-logo {
+    font-style: italic;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.visa-logo span {
+    color: #3b82f6;
+}

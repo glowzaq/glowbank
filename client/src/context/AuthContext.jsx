@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
-    navigate('/login')
+    navigate('/')
   }
 
   const value = {
