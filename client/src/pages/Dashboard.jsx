@@ -135,12 +135,9 @@ export const Dashboard = () => {
                             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                                 <h5 className="fw-bold mb-0">Recent Activity</h5>
                                 <div className="input-group" style={{ maxWidth: '300px' }}>
-                                    {/* <span className="input-group-text bg-white border-end-0">
-                                        <i className="bi bi-search text-muted small"></i>
-                                    </span> */}
                                     <input
                                         type="text"
-                                        className="form-control border-start-2 ps-0 form-control-sm"
+                                        className="form-control border-start-0 ps-3 form-control-sm"
                                         placeholder="Search description..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -187,7 +184,6 @@ export const Dashboard = () => {
                     <div className="col-lg-4">
                         <CreditCard
                             name={`${user?.firstname} ${user?.lastname}`}
-                            // name={`${user?.firstname || ''} ${user?.lastname || ''}`}
                             expiry="12/28"
                         />
 
@@ -235,9 +231,28 @@ export const TransferForm = ({ balance, onTransferSuccess }) => {
 
     const handleTransfer = async (e) => {
         e.preventDefault()
-        if (Number(amount) <= 0 || Number(amount) > Number(balance) || recipientEmail === user.email) {
-            Swal.fire({icon: 'error', title: 'Invalid transaction, check and try again'})
-            return;
+        if (Number(amount) <= 0) {
+            return Swal.fire({
+                icon: 'error',
+                title: 'Invalid Amount',
+                text: 'Please enter an amount greater than $0.00'
+            });
+        }
+
+        if (Number(amount) > Number(balance)) {
+            return Swal.fire({
+                icon: 'warning',
+                title: 'Insufficient Funds',
+                text: `You are trying to send $${amount}, but your current balance is $${balance.toLocaleString()}.`
+            });
+        }
+
+        if (recipientEmail === user.email) {
+            return Swal.fire({
+                icon: 'info',
+                title: 'Self-Transfer Not Allowed',
+                text: 'To add money to your own account, please use the "Quick Deposit" tool.'
+            });
         }
 
         setLoading(true)
