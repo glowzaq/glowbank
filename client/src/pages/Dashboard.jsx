@@ -12,6 +12,7 @@ export const Dashboard = () => {
     const [isDepositOpen, setIsDepositOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [depositAmount, setDepositAmount] = useState("")
+    const [searchTerm, setSearchTerm] = useState("")
 
     const fetchDashboard = async () => {
         const token = localStorage.getItem('token')
@@ -64,6 +65,8 @@ export const Dashboard = () => {
             setLoading(false)
         }
     }
+
+    const filteredTransactions = data.transaction?.filter(tx => tx.description.toLowerCase().includes(searchTerm.toLowerCase())) || []
 
     return (
         <div className="dashboard-wrapper">
@@ -129,7 +132,21 @@ export const Dashboard = () => {
 
                         {/* Recent Activity */}
                         <div className="card stat-card p-4">
-                            <h5 className="fw-bold mb-4">Recent Activity</h5>
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                                <h5 className="fw-bold mb-0">Recent Activity</h5>
+                                <div className="input-group" style={{ maxWidth: '300px' }}>
+                                    <span className="input-group-text bg-white border-end-0">
+                                        <i className="bi bi-search text-muted small"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="form-control border-start-0 ps-0 form-control-sm"
+                                        placeholder="Search description..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                </div>
+                            </div>
                             <div className="table-responsive">
                                 <table className="table table-hover align-middle">
                                     <thead className="table-light">
@@ -140,8 +157,8 @@ export const Dashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.transaction?.length > 0 ? (
-                                            data.transaction.map((tx) => {
+                                        {filteredTransactions?.length > 0 ? (
+                                            filteredTransactions.map((tx) => {
                                                 const isRecipient = user && String(tx.recipientId) === String(user._id);
                                                 return (
                                                     <tr key={tx._id}>
@@ -154,7 +171,11 @@ export const Dashboard = () => {
                                                 );
                                             })
                                         ) : (
-                                            <tr><td colSpan={3} className="text-center py-4 text-muted small">No transactions found.</td></tr>
+                                            <tr>
+                                                <td colSpan={3} className="text-center py-4 text-muted small">
+                                                    {searchTerm ? `No results found for "${searchTerm}"` : "No transactions found."}
+                                                </td>
+                                            </tr>
                                         )}
                                     </tbody>
                                 </table>
