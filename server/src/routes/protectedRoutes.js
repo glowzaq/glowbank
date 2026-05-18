@@ -4,10 +4,6 @@ import accountModel from '../models/accountModel.js'
 
 const router = express.Router()
 router.get("/protected", protect, async (req, res)=>{
-    // res.json({
-    //     message: 'Access granted',
-    //     user: req.user
-    // })
     try {
         const userAccount = await accountModel.findOne({ userId: req.user._id });
 

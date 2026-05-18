@@ -21,7 +21,7 @@ const App = () => {
 
 const AppContent = ()=>{
   const location = useLocation()
-  const hideNavbarOn = ['/dashboard'];
+  const hideNavbarOn = ['/dashboard', '/profile'];
   const shouldHide = hideNavbarOn.includes(location.pathname);
 
   return (
