@@ -7,7 +7,7 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import { Dashboard } from './pages/Dashboard'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
-import Profile from './pages/Profile'
+// import Profile from './pages/Profile'
 
 const App = () => {
   return (
@@ -21,7 +21,7 @@ const App = () => {
 
 const AppContent = ()=>{
   const location = useLocation()
-  const hideNavbarOn = ['/dashboard', '/profile'];
+  const hideNavbarOn = ['/dashboard'];
   const shouldHide = hideNavbarOn.includes(location.pathname);
 
   return (
@@ -36,11 +36,11 @@ const AppContent = ()=>{
             <Dashboard />
           </ProtectedRoute>
         } />
-        <Route path='/profile' element={
+        {/* <Route path='/profile' element={
           <ProtectedRoute>
             <Profile/>
           </ProtectedRoute>
-        }/>
+        }/> */}
       </Routes>
     </>
   )
