@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, updateProfile } from '../controllers/authController.js'
+import { register, login } from '../controllers/authController.js'
 import { authLimiter } from '../middleware/rateLimit.js'
 
 
